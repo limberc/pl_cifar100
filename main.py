@@ -126,8 +126,8 @@ class ImageNetLightningModel(LightningModule):
             weight_decay=self.weight_decay,
             nesterov=True
         )
-        scheduler = lr_scheduler.StepLR(
-            optimizer, [60, 120, 160], gamma=[0.2, 0.2, 0.2]
+        scheduler = lr_scheduler.MultiStepLR(
+            optimizer, milestones=[60, 120, 160], gamma=0.2
         )
         return [optimizer], [scheduler]
 
