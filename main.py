@@ -8,7 +8,7 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 import torch.utils.data
 import torch.utils.data.distributed
-import torchvision.models as models
+import models
 import torchvision.transforms as transforms
 from pytorch_lightning.core import LightningModule
 from torchvision.datasets import CIFAR10, CIFAR100
