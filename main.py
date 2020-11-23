@@ -8,10 +8,11 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 import torch.utils.data
 import torch.utils.data.distributed
-import models
 import torchvision.transforms as transforms
 from pytorch_lightning.core import LightningModule
 from torchvision.datasets import CIFAR10, CIFAR100
+
+import models
 
 
 def get_dataset(data_path, dataset):
@@ -122,11 +123,11 @@ class ImageNetLightningModel(LightningModule):
             self.parameters(),
             lr=self.lr,
             momentum=self.momentum,
-            weight_decay=self.weight_decay
+            weight_decay=self.weight_decay,
+            nesterov=True
         )
-        scheduler = lr_scheduler.LambdaLR(
-            optimizer,
-            lambda epoch: 0.1 ** (epoch // 30)
+        scheduler = lr_scheduler.StepLR(
+            optimizer, [60, 120, 160], gamma=[0.2, 0.2, 0.2]
         )
         return [optimizer], [scheduler]
 
@@ -173,18 +174,18 @@ class ImageNetLightningModel(LightningModule):
                                   + ' (default: resnet18)'))
         parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                             help='number of data loading workers (default: 4)')
-        parser.add_argument('-b', '--batch-size', default=256, type=int,
+        parser.add_argument('-b', '--batch-size', default=512, type=int,
                             metavar='N',
                             help='mini-batch size (default: 256), this is the total '
                                  'batch size of all GPUs on the current node when '
                                  'using Data Parallel or Distributed Data Parallel')
-        parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
+        parser.add_argument('--lr', '--learning-rate', default=0.4, type=float,
                             metavar='LR', help='initial learning rate', dest='lr')
 
         parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                             help='momentum')
-        parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
-                            metavar='W', help='weight decay (default: 1e-4)',
+        parser.add_argument('--wd', '--weight-decay', default=5e-4, type=float,
+                            metavar='W', help='weight decay (default: 5e-4)',
                             dest='weight_decay')
         parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                             help='use pre-trained model')
