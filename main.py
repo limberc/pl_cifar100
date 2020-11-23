@@ -188,7 +188,7 @@ class ImageNetLightningModel(LightningModule):
                             metavar='W', help='weight decay (default: 5e-4)',
                             dest='weight_decay')
         parser.add_argument('--pretrained', dest='pretrained', action='store_true',
-                            help='use pre-trained model')
+                            help='use layer0-trained model')
         return parser
 
 

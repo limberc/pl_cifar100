@@ -2,13 +2,6 @@ import torch.nn as nn
 
 
 class BasicBlock(nn.Module):
-    """Basic Block for resnet 18 and resnet 34
-    """
-
-    # BasicBlock and BottleNeck block
-    # have different output size
-    # we use class attribute expansion
-    # to distinct
     expansion = 1
 
     def __init__(self, in_channels, out_channels, stride=1):
@@ -88,18 +81,6 @@ class ResNet(nn.Module):
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
     def _make_layer(self, block, out_channels, num_blocks, stride):
-        """make resnet layers(by layer i didnt mean this 'layer' was the
-        same as a neuron netowork layer, ex. conv layer), one layer may
-        contain more than one residual block
-        Args:
-            block: block type, basic block or bottle neck block
-            out_channels: output depth channel number of this layer
-            num_blocks: how many blocks per layer
-            stride: the stride of the first block of this layer
-        Return:
-            return a resnet layer
-        """
-
         # we have num_block blocks per layer, the first block
         # could be 1 or 2, other blocks would always be 1
         strides = [stride] + [1] * (num_blocks - 1)
