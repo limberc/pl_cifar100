@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 
-class PreActBasic(nn.Module):
+class PABasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, in_channels, out_channels, stride):
@@ -12,12 +12,12 @@ class PreActBasic(nn.Module):
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels * PreActBasic.expansion, kernel_size=3, padding=1)
+            nn.Conv2d(out_channels, out_channels * PABasicBlock.expansion, kernel_size=3, padding=1)
         )
 
         self.shortcut = nn.Sequential()
-        if stride != 1 or in_channels != out_channels * PreActBasic.expansion:
-            self.shortcut = nn.Conv2d(in_channels, out_channels * PreActBasic.expansion, 1, stride=stride)
+        if stride != 1 or in_channels != out_channels * PABasicBlock.expansion:
+            self.shortcut = nn.Conv2d(in_channels, out_channels * PABasicBlock.expansion, 1, stride=stride)
 
     def forward(self, x):
         res = self.residual(x)
@@ -26,7 +26,7 @@ class PreActBasic(nn.Module):
         return res + shortcut
 
 
-class PreActBottleNeck(nn.Module):
+class PABottleNeck(nn.Module):
     expansion = 4
 
     def __init__(self, in_channels, out_channels, stride):
@@ -43,14 +43,14 @@ class PreActBottleNeck(nn.Module):
 
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels * PreActBottleNeck.expansion, 1)
+            nn.Conv2d(out_channels, out_channels * PABottleNeck.expansion, 1)
         )
 
         self.shortcut = nn.Sequential()
 
-        if stride != 1 or in_channels != out_channels * PreActBottleNeck.expansion:
+        if stride != 1 or in_channels != out_channels * PABottleNeck.expansion:
             self.shortcut = nn.Conv2d(
-                in_channels, out_channels * PreActBottleNeck.expansion, 1, stride=stride)
+                in_channels, out_channels * PABottleNeck.expansion, 1, stride=stride)
 
     def forward(self, x):
         res = self.residual(x)
@@ -105,20 +105,20 @@ class PreActResNet(nn.Module):
 
 
 def preactresnet18(num_classes=100):
-    return PreActResNet(PreActBasic, [2, 2, 2, 2], num_classes)
+    return PreActResNet(PABasicBlock, [2, 2, 2, 2], num_classes)
 
 
 def preactresnet34(num_classes=100):
-    return PreActResNet(PreActBasic, [3, 4, 6, 3], num_classes)
+    return PreActResNet(PABasicBlock, [3, 4, 6, 3], num_classes)
 
 
 def preactresnet50(num_classes=100):
-    return PreActResNet(PreActBottleNeck, [3, 4, 6, 3], num_classes)
+    return PreActResNet(PABottleNeck, [3, 4, 6, 3], num_classes)
 
 
 def preactresnet101(num_classes=100):
-    return PreActResNet(PreActBottleNeck, [3, 4, 23, 3], num_classes)
+    return PreActResNet(PABottleNeck, [3, 4, 23, 3], num_classes)
 
 
 def preactresnet152(num_classes=100):
-    return PreActResNet(PreActBottleNeck, [3, 8, 36, 3], num_classes)
+    return PreActResNet(PABottleNeck, [3, 8, 36, 3], num_classes)

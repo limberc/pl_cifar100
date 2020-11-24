@@ -75,7 +75,6 @@ class ImageNetLightningModel(LightningModule):
             num_classes = 100
         else:
             raise ValueError("NOT SUPPORT DATASET.")
-        # self.model = models.__dict__[self.arch](pretrained=self.pretrained)
         self.model = models.__dict__[self.arch](num_classes)
         self.train_datset, self.test_dataset = get_dataset(data_path, dataset)
 
