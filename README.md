@@ -1,3 +1,7 @@
+# PyTorch Lightning CIFAR100
+
+`python main.py -a ${your_model} --gpus ${num_gpus} --distributed_backend ddp`
+
 ## Training Details
 
 I follow the hyperparameter settings in paper [Improved Regularization of Convolutional Neural Networks with Cutout](https://arxiv.org/abs/1708.04552v2), which is init lr = 0.4 divide by 5 at 60th, 120th, 160th epochs, train for 200 epochs. The batch size that we use is 512 with weight decay 5e-4, Nesterov momentum of 0.9.
