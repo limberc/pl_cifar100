@@ -1,5 +1,7 @@
 # PyTorch Lightning CIFAR100
 
+This is a extremely simple PyTorch Lighting repo for Computer Vision learner.
+
 `python main.py -a ${your_model} --gpus ${num_gpus} --distributed_backend ddp`
 
 ## Training Details
@@ -17,7 +19,7 @@ Use ImageNet model directly would face up to the accuracy lost.
 | :-------------: | :----: | :-----: | :-----: |
 |    ResNet18     | 11.2M  |  75.83  |  93.36  |
 |    ResNet34     | 21.3M  |  77.53  |  94.11  |
-|    ResNet50     | 23.7M  |         |         |
+|    ResNet50     | 23.7M  |  78.12  |  94.81  |
 |    ResNet101    | 42.7M  |         |         |
 |    ResNet152    | 58.3M  |         |         |
 | PreactResNet18  | 11.3M  |         |         |
