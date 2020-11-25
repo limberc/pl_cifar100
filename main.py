@@ -38,7 +38,7 @@ def get_dataset(data_path, dataset):
     return train_data, test_data
 
 
-class ImageNetLightningModel(LightningModule):
+class CIFARLightningModel(LightningModule):
     # pull out resnet names from torchvision models
     MODEL_NAMES = sorted(
         name for name in models.__dict__
@@ -168,8 +168,8 @@ class ImageNetLightningModel(LightningModule):
     def add_model_specific_args(parent_parser):  # pragma: no-cover
         parser = ArgumentParser(parents=[parent_parser])
         parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
-                            choices=ImageNetLightningModel.MODEL_NAMES,
-                            help=('model architecture: ' + ' | '.join(ImageNetLightningModel.MODEL_NAMES)
+                            choices=CIFARLightningModel.MODEL_NAMES,
+                            help=('model architecture: ' + ' | '.join(CIFARLightningModel.MODEL_NAMES)
                                   + ' (default: resnet18)'))
         parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                             help='number of data loading workers (default: 4)')
@@ -202,7 +202,7 @@ def main(args: Namespace) -> None:
         args.batch_size = int(args.batch_size / max(1, args.gpus))
         args.workers = int(args.workers / max(1, args.gpus))
 
-    model = ImageNetLightningModel(**vars(args))
+    model = CIFARLightningModel(**vars(args))
     trainer = pl.Trainer.from_argparse_args(args)
 
     if args.evaluate:
@@ -222,7 +222,7 @@ def run_cli():
                                help='evaluate model on validation set')
     parent_parser.add_argument('--seed', type=int, default=42,
                                help='seed for initializing training.')
-    parser = ImageNetLightningModel.add_model_specific_args(parent_parser)
+    parser = CIFARLightningModel.add_model_specific_args(parent_parser)
     parser.set_defaults(
         profiler=True,
         deterministic=True,
