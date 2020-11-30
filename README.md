@@ -21,27 +21,22 @@ Use ImageNet model directly would face up to the accuracy lost.
 
 ## Results
 
-|     network     | params | error@1 | error@5 |
-| :-------------: | :----: | :-----: | :-----: |
-|    ResNet18     | 11.2M  |  75.83  |  93.36  |
-|    ResNet34     | 21.3M  |  77.53  |  94.11  |
-|    ResNet50     | 23.7M  |  78.12  |  94.81  |
-|    ResNet101    | 42.7M  |  78.53  |  95.13  |
-|    ResNet152    | 58.3M  |  80.53  |  95.21  |
-|   MobileNetv2   |   2M   |         |         |
-| PreactResNet18  | 11.3M  |         |         |
-| PreactResNet34  | 21.5M  |         |         |
-| PreactResNet50  | 23.9M  |         |         |
-| PreactResNet101 | 42.9M  |         |         |
-| PreactResNet152 | 58.6M  |         |         |
-|    ResNeXt50    | 14.8M  |         |         |
-|   ResNeXt101    | 25.3M  |         |         |
-|   ResNeXt152    | 33.3M  |         |         |
-|   DenseNet121   |  7.0M  |         |         |
-|   DenseNet161   |  26M   |         |         |
-|   DenseNet201   |  18M   |         |         |
-|   SeResNet18    | 11.4M  |  76.54  |  93.55  |
-|   SeResNet34    | 21.6M  |         |         |
-|   SeResNet50    | 26.5M  |         |         |
-|   SeResNet101   | 47.7M  |         |         |
-|   SeResNet152   | 66.2M  |         |         |
+|   network   | params |     error@1     | error@5 |
+| :---------: | :----: | :-------------: | :-----: |
+|  ResNet18   | 11.2M  |      75.83      |  93.36  |
+|  ResNet34   | 21.3M  |      77.53      |  94.11  |
+|  ResNet50   | 23.7M  |      78.12      |  94.81  |
+|  ResNet101  | 42.7M  |      78.53      |  95.13  |
+|  ResNet152  | 58.3M  |      80.53      |  95.21  |
+| MobileNetv2 |   2M   |      68.25      |  90.51  |
+|  ResNeXt50  | 14.8M  |                 |         |
+| ResNeXt101  | 25.3M  |                 |         |
+| ResNeXt152  | 33.3M  |                 |         |
+| DenseNet121 |  7.0M  |                 |         |
+| DenseNet161 |  26M   |                 |         |
+| DenseNet201 |  18M   |                 |         |
+| SeResNet18  | 11.4M  |      76.54      |  93.55  |
+| SeResNet34  | 21.6M  |      76.13      |  93.14  |
+| SeResNet50  | 26.5M  |      77.94      |  94.55  |
+| SeResNet101 | 47.7M  | ONGOING V100 v0 |         |
+| SeResNet152 | 66.2M  |                 |         |

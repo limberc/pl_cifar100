@@ -60,3 +60,11 @@ def resnet152(num_classes=100):
     """ return a ResNet 152 object
     """
     return CIFARResNet(Bottleneck, [3, 8, 36, 3], num_classes)
+
+
+def resnext50(num_classes=100):
+    return CIFARResNet(Bottleneck, [3, 4, 6, 3], num_classes, groups=32, width_per_group=4)
+
+
+def resnext101(num_classes=100):
+    return CIFARResNet(Bottleneck, [3, 4, 23, 3], num_classes, groups=32, width_per_group=8)
