@@ -14,7 +14,6 @@ from torchvision.datasets import CIFAR10, CIFAR100
 
 import models
 
-
 def get_dataset(data_path, dataset):
     if dataset == 'cifar10':
         mean = [x / 255 for x in [125.3, 123.0, 113.9]]
@@ -48,7 +47,6 @@ class CIFARLightningModel(LightningModule):
     def __init__(
             self,
             arch: str,
-            pretrained: bool,
             lr: float,
             momentum: float,
             weight_decay: int,
@@ -178,7 +176,7 @@ class CIFARLightningModel(LightningModule):
                             help='mini-batch size (default: 256), this is the total '
                                  'batch size of all GPUs on the current node when '
                                  'using Data Parallel or Distributed Data Parallel')
-        parser.add_argument('--lr', '--learning-rate', default=0.4, type=float,
+        parser.add_argument('-lr', '--learning-rate', default=0.4, type=float,
                             metavar='LR', help='initial learning rate', dest='lr')
 
         parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
