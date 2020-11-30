@@ -68,3 +68,11 @@ def resnext50(num_classes=100):
 
 def resnext101(num_classes=100):
     return CIFARResNet(Bottleneck, [3, 4, 23, 3], num_classes, groups=32, width_per_group=8)
+
+
+def wideresnet50(num_classes=100):
+    return CIFARResNet(Bottleneck, [3, 4, 6, 3], num_classes, width_per_group=64 * 2)
+
+
+def wideresnet101(num_classes=100):
+    return CIFARResNet(Bottleneck, [3, 4, 23, 3], num_classes, width_per_group=64 * 2)
