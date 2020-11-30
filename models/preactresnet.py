@@ -12,8 +12,10 @@ class PABasicBlock(nn.Module):
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels * PABasicBlock.expansion, kernel_size=3, padding=1)
+            nn.Conv2d(out_channels, out_channels * PABasicBlock.expansion,
+                      kernel_size=3, padding=1)
         )
+        self.relu = nn.ReLU(inplace=True)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels * PABasicBlock.expansion:
@@ -22,8 +24,10 @@ class PABasicBlock(nn.Module):
     def forward(self, x):
         res = self.residual(x)
         shortcut = self.shortcut(x)
+        out = res + shortcut
+        out = self.relu(out)
 
-        return res + shortcut
+        return out
 
 
 class PABottleNeck(nn.Module):
@@ -45,6 +49,7 @@ class PABottleNeck(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(out_channels, out_channels * PABottleNeck.expansion, 1)
         )
+        self.relu = nn.ReLU(inplace=True)
 
         self.shortcut = nn.Sequential()
 
@@ -55,8 +60,7 @@ class PABottleNeck(nn.Module):
     def forward(self, x):
         res = self.residual(x)
         shortcut = self.shortcut(x)
-
-        return res + shortcut
+        return self.relu(res + shortcut)
 
 
 class PreActResNet(nn.Module):
