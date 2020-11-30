@@ -21,22 +21,22 @@ Use ImageNet model directly would face up to the accuracy lost.
 
 ## Results
 
-|   network   | params |     error@1     | error@5 |
-| :---------: | :----: | :-------------: | :-----: |
-|  ResNet18   | 11.2M  |      75.83      |  93.36  |
-|  ResNet34   | 21.3M  |      77.53      |  94.11  |
-|  ResNet50   | 23.7M  |      78.12      |  94.81  |
-|  ResNet101  | 42.7M  |      78.53      |  95.13  |
-|  ResNet152  | 58.3M  |      80.53      |  95.21  |
-| MobileNetv2 |   2M   |      68.25      |  90.51  |
-|  ResNeXt50  | 14.8M  |                 |         |
-| ResNeXt101  | 25.3M  |                 |         |
-| ResNeXt152  | 33.3M  |                 |         |
-| DenseNet121 |  7.0M  |                 |         |
-| DenseNet161 |  26M   |                 |         |
-| DenseNet201 |  18M   |                 |         |
-| SeResNet18  | 11.4M  |      76.54      |  93.55  |
-| SeResNet34  | 21.6M  |      76.13      |  93.14  |
-| SeResNet50  | 26.5M  |      77.94      |  94.55  |
-| SeResNet101 | 47.7M  | ONGOING V100 v0 |         |
-| SeResNet152 | 66.2M  |                 |         |
+|    network    | params |     error@1     | error@5 |
+| :-----------: | :----: | :-------------: | :-----: |
+|   ResNet18    | 11.2M  |      75.83      |  93.36  |
+|   ResNet34    | 21.3M  |      77.53      |  94.11  |
+|   ResNet50    | 23.7M  |      78.12      |  94.81  |
+|   ResNet101   | 42.7M  |      78.53      |  95.13  |
+|   ResNet152   | 58.3M  |      80.53      |  95.21  |
+|  MobileNetv2  |   2M   |      68.25      |  90.51  |
+|   ResNeXt50   | 14.8M  |      79.54      |  95.21  |
+|  ResNeXt101   | 25.3M  | ONGOING T4@2 v1 |         |
+|  DenseNet121  |  7.0M  | ONGOING T4@2 v2 |         |
+|  DenseNet161  |  26M   | ONGOING T4@2 v3 |         |
+|  DenseNet201  |  18M   | ONGOING T4@2 v4 |         |
+|  SeResNet18   | 11.4M  |      76.54      |  93.55  |
+|  SeResNet34   | 21.6M  |      76.13      |  93.14  |
+|  SeResNet50   | 26.5M  |      77.94      |  94.55  |
+|  SeResNet101  | 47.7M  | ONGOING V100 v0 |         |
+| WideResNet50  |        | ONGOING T4@1 v0 |         |
+| WideResNet101 |        |                 |         |
