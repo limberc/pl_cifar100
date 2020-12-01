@@ -186,6 +186,10 @@ class CIFARLightningModel(LightningModule):
                             dest='weight_decay')
         parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                             help='use layer0-trained model')
+        parser.add_argument('--auto_scale_batch_size', action='store_true',
+                            help='use automatically chose batch size.')
+        parser.add_argument('--auto_lr_find', action='store_true',
+                            help='use automatically chose learning rate.')
         return parser
 
 
