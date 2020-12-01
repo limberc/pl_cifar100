@@ -186,10 +186,7 @@ class CIFARLightningModel(LightningModule):
                             dest='weight_decay')
         parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                             help='use layer0-trained model')
-        parser.add_argument('--auto_scale_batch_size', action='store_true',
-                            help='use automatically chose batch size.')
-        parser.add_argument('--auto_lr_find', action='store_true',
-                            help='use automatically chose learning rate.')
+
         return parser
 
 
@@ -224,6 +221,10 @@ def run_cli():
                                help='evaluate model on validation set')
     parent_parser.add_argument('--seed', type=int, default=42,
                                help='seed for initializing training.')
+    parent_parser.add_argument('--auto_scale_batch_size', action='store_true',
+                        help='use automatically chose batch size.')
+    parent_parser.add_argument('--auto_lr_find', action='store_true',
+                        help='use automatically chose learning rate.')
     parser = CIFARLightningModel.add_model_specific_args(parent_parser)
     parser.set_defaults(
         profiler=True,
