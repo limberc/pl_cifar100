@@ -14,6 +14,7 @@ from torchvision.datasets import CIFAR10, CIFAR100
 
 import models
 
+
 def get_dataset(data_path, dataset):
     if dataset == 'cifar10':
         mean = [x / 255 for x in [125.3, 123.0, 113.9]]
@@ -118,7 +119,7 @@ class CIFARLightningModel(LightningModule):
     def configure_optimizers(self):
         optimizer = optim.SGD(
             self.parameters(),
-            lr=self.lr,
+            lr=(self.lr or self.learning_rate),
             momentum=self.momentum,
             weight_decay=self.weight_decay,
             nesterov=True
@@ -203,6 +204,8 @@ def main(args: Namespace) -> None:
 
     model = CIFARLightningModel(**vars(args))
     trainer = pl.Trainer.from_argparse_args(args)
+    if args.auto_lr_find or args.auto_scale_batch_size:
+        trainer.tune(model)
 
     if args.evaluate:
         trainer.test(model)
@@ -221,10 +224,6 @@ def run_cli():
                                help='evaluate model on validation set')
     parent_parser.add_argument('--seed', type=int, default=42,
                                help='seed for initializing training.')
-    parent_parser.add_argument('--auto_scale_batch_size', action='store_true',
-                        help='use automatically chose batch size.')
-    parent_parser.add_argument('--auto_lr_find', action='store_true',
-                        help='use automatically chose learning rate.')
     parser = CIFARLightningModel.add_model_specific_args(parent_parser)
     parser.set_defaults(
         profiler=True,
