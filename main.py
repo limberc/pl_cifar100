@@ -75,7 +75,8 @@ class CIFARLightningModel(LightningModule):
             num_classes = 100
         else:
             raise ValueError("NOT SUPPORT DATASET.")
-        self.model = models.__dict__[self.arch](num_classes)
+        self.model = models.__dict__[self.arch](num_classes, kwargs['random_layers'],
+                                                kwargs['train'], kwargs['alpha'])
         self.train_datset, self.test_dataset = get_dataset(data_path, dataset)
 
     def forward(self, x):
@@ -185,6 +186,17 @@ class CIFARLightningModel(LightningModule):
         parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                             help='use layer0-trained model')
 
+        # Mixup Related Params.
+        parser.add_argument('--train', default='grad_mixup_random', type=str,
+                            choices=['vanilla', 'mixup', 'mixup_hidden', 'grad_mixup_random'],
+                            help='Mixup Method.')
+        parser.add_argument('--alpha', default=1.0, type=float,
+                            help='Mixup Alpha, for Input Mixup, the recommended value is 1.0, \
+                                    for Manifold Mixup, the recommended value is 2.0')
+        parser.add_argument('--beta', default=1.0, type=float,
+                            help='G-Mixup beta')
+        parser.add_argument('--random_layers', type=int, nargs='+', default=[0, 1, 2, 3],
+                            help='Random Layer range.')
         return parser
 
 
