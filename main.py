@@ -10,6 +10,7 @@ import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
 from pytorch_lightning.core import LightningModule
+from pytorch_lightning.loggers import NeptuneLogger
 from torchvision.datasets import CIFAR10, CIFAR100
 from pytorch_lightning.plugins import DDPPlugin
 
@@ -205,6 +206,21 @@ def main(args: Namespace) -> None:
         pl.seed_everything(args.seed)
 
     model = CIFARLightningModel(**vars(args))
+    args.logger = NeptuneLogger(
+        api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIzNDc5ZWIwNC1hMGVhLTQzZmEtODZmYi00NTZhMDA0NmE2ZDQifQ==",
+        project_name='DPI-Project/mixup-new',
+        experiment_name="ImageNet-ManifoldMixup",
+        params={
+            'model': args.arch,
+            'dataset': args.dataset,
+            'learning_rate': args.lr,
+            'mixup_method': args.train,
+            'mixup_alpha': args.alpha,
+            'optimizer': args.optim,
+            'g-mixup-beta': args.beta,
+            'random_layers': args.random_layers,
+        }, offline_mode=True
+    )
     trainer = pl.Trainer.from_argparse_args(args)
     if args.auto_lr_find or args.auto_scale_batch_size:
         trainer.tune(model)
@@ -220,13 +236,15 @@ def run_cli():
     parent_parser = pl.Trainer.add_argparse_args(parent_parser)
     parent_parser.add_argument('--data-path', metavar='DIR', type=str, default='./data',
                                help='path to dataset')
-    parent_parser.add_argument('--dataset', type=str, default='cifar100',
-                               help='CIFAR10 or CIFAR100')
+    parent_parser.add_argument('--dataset', type=str, choices=('cifar10', 'cifar100', 'imagenet', 'svhn',
+                                                               'tiny-imagenet-200', 'mnist', 'stl10'),
+                               default='cifar100', help='The dataset that you use.')
     parent_parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                                help='evaluate model on validation set')
     parent_parser.add_argument('--seed', type=int, default=42,
                                help='seed for initializing training.')
     parser = CIFARLightningModel.add_model_specific_args(parent_parser)
+
     parser.set_defaults(
         profiler=True,
         deterministic=True,
