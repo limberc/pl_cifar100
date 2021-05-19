@@ -11,6 +11,7 @@ import torch.utils.data.distributed
 import torchvision.transforms as transforms
 from pytorch_lightning.core import LightningModule
 from torchvision.datasets import CIFAR10, CIFAR100
+from pytorch_lightning.plugins import DDPPlugin
 
 import models
 
@@ -146,7 +147,6 @@ class CIFARLightningModel(LightningModule):
             batch_size=self.batch_size,
             num_workers=self.workers,
             pin_memory=True,
-            drop_last=True
         )
         return val_loader
 
@@ -156,7 +156,6 @@ class CIFARLightningModel(LightningModule):
             batch_size=self.batch_size,
             num_workers=self.workers,
             pin_memory=True,
-            drop_last=True
         )
         return test_loader
 
@@ -170,8 +169,6 @@ class CIFARLightningModel(LightningModule):
                             choices=CIFARLightningModel.MODEL_NAMES,
                             help=('model architecture: ' + ' | '.join(CIFARLightningModel.MODEL_NAMES)
                                   + ' (default: resnet18)'))
-        parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
-                            help='number of data loading workers (default: 4)')
         parser.add_argument('-b', '--batch-size', default=512, type=int,
                             metavar='N',
                             help='mini-batch size (default: 256), this is the total '
@@ -194,13 +191,6 @@ class CIFARLightningModel(LightningModule):
 def main(args: Namespace) -> None:
     if args.seed is not None:
         pl.seed_everything(args.seed)
-
-    if args.distributed_backend == 'ddp':
-        # When using a single GPU per process and per
-        # DistributedDataParallel, we need to divide the batch size
-        # ourselves based on the total number of GPUs we have
-        args.batch_size = int(args.batch_size / max(1, args.gpus))
-        args.workers = int(args.workers / max(1, args.gpus))
 
     model = CIFARLightningModel(**vars(args))
     trainer = pl.Trainer.from_argparse_args(args)
@@ -229,6 +219,8 @@ def run_cli():
         profiler=True,
         deterministic=True,
         max_epochs=200,
+        accelerator='ddp',
+        plugins=DDPPlugin(find_unused_parameters=False),
     )
     args = parser.parse_args()
     main(args)
