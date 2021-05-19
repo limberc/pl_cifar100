@@ -214,7 +214,6 @@ def run_cli():
                                help='seed for initializing training.')
     parser = CIFARLightningModel.add_model_specific_args(parent_parser)
     parser.set_defaults(
-        profiler=True,
         deterministic=True,
         max_epochs=200,
         accelerator='ddp',
