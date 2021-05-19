@@ -134,7 +134,7 @@ class CIFARLightningModel(LightningModule):
             dataset=self.train_datset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=self.workers,
+            num_workers=27,
             pin_memory=True,
             drop_last=True
         )
@@ -144,7 +144,7 @@ class CIFARLightningModel(LightningModule):
         val_loader = torch.utils.data.DataLoader(
             dataset=self.test_dataset,
             batch_size=self.batch_size,
-            num_workers=self.workers,
+            num_workers=12,
             pin_memory=True,
         )
         return val_loader
