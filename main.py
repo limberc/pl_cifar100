@@ -56,7 +56,6 @@ class CIFARLightningModel(LightningModule):
             data_path: str,
             dataset: str,
             batch_size: int,
-            workers: int,
             **kwargs,
     ):
         super().__init__()
@@ -69,7 +68,6 @@ class CIFARLightningModel(LightningModule):
         self.data_path = data_path
         self.dataset = dataset
         self.batch_size = batch_size
-        self.workers = workers
         if dataset == 'cifar10':
             num_classes = 10
         elif dataset == 'cifar100':
