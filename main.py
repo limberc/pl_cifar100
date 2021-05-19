@@ -87,10 +87,7 @@ class CIFARLightningModel(LightningModule):
         images, target = batch
         output = self(images)
         loss_val = F.cross_entropy(output, target)
-        acc1, acc5 = self.__accuracy(output, target, topk=(1, 5))
         self.log('train_loss', loss_val, on_step=True, on_epoch=True, logger=True)
-        self.log('train_acc1', acc1, on_step=True, prog_bar=True, on_epoch=True, logger=True)
-        self.log('train_acc5', acc5, on_step=True, on_epoch=True, logger=True)
         return loss_val
 
     def validation_step(self, batch, batch_idx):
@@ -246,7 +243,6 @@ def run_cli():
     parser = CIFARLightningModel.add_model_specific_args(parent_parser)
 
     parser.set_defaults(
-        profiler=True,
         deterministic=True,
         max_epochs=200,
         accelerator='ddp',
