@@ -23,7 +23,7 @@ Use ImageNet model directly would face up to the accuracy lost.
 
 ## Results
 
-|   network   | params | error@1 | error@5 |
+|   network   | params | VAL ACC@1 | VAL ACC@5 |
 | :---------: | :----: | :-----: | :-----: |
 |  ResNet18   | 11.2M  |  75.83  |  93.36  |
 |  ResNet34   | 21.3M  |  77.53  |  94.11  |
