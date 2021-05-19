@@ -2,13 +2,8 @@
 
 This is a extremely simple PyTorch Lighting repo for Computer Vision learner.
 
-If you are using multiple GPU:
-
-`python main.py -a ${your_model} --gpus ${num_gpus} -b ${batch_size} --distributed_backend ddp`
-
-For single GPU:
-
-`python main.py -a ${your_model} --gpus 1 -b ${batch_size} `
+## Usage
+`python main.py -a ${your_model} --gpus ${num_gpus} -b ${batch_size}`
 
 ## Training Details
 
