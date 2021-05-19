@@ -55,7 +55,6 @@ class CIFARLightningModel(LightningModule):
             data_path: str,
             dataset: str,
             batch_size: int,
-            workers: int,
             **kwargs,
     ):
         super().__init__()
@@ -68,7 +67,6 @@ class CIFARLightningModel(LightningModule):
         self.data_path = data_path
         self.dataset = dataset
         self.batch_size = batch_size
-        self.workers = workers
         if dataset == 'cifar10':
             num_classes = 10
         elif dataset == 'cifar100':
@@ -135,7 +133,7 @@ class CIFARLightningModel(LightningModule):
             dataset=self.train_datset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=self.workers,
+            num_workers=27,
             pin_memory=True,
             drop_last=True
         )
@@ -145,7 +143,7 @@ class CIFARLightningModel(LightningModule):
         val_loader = torch.utils.data.DataLoader(
             dataset=self.test_dataset,
             batch_size=self.batch_size,
-            num_workers=self.workers,
+            num_workers=12,
             pin_memory=True,
         )
         return val_loader
