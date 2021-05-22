@@ -29,6 +29,22 @@ class CIFARResNet(ResNet):
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+        # Zero-initialize the last BN in each residual branch,
+        # so that the residual branch starts with zeros, and each residual block behaves like an identity.
+        # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
+        if zero_init_residual:
+            for m in self.modules():
+                if isinstance(m, Bottleneck):
+                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
+                elif isinstance(m, BasicBlock):
+                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
 
     def _forward_impl(self, x):
         x = self.conv1(x)
@@ -253,11 +269,10 @@ def resnet18(num_classes, random_layers=[0, 1, 2, 3], method='mixup', mixup_alph
 
 def resnet34(num_classes, random_layers=[0, 1, 2, 3], method='mixup', mixup_alpha=1.0, beta=1.0,
              dropout=False):
-    # model = ResNet(ResNetBasicBlock, [3, 4, 6, 3], num_classes=num_classes, method=method,
-    #                random_layers=random_layers, mixup_alpha=mixup_alpha, beta=beta,
-    #                dropout=dropout)
-    # return model
-    return CIFARResNet(BasicBlock, [3, 4, 6, 3], num_classes)
+    model = ResNet(ResNetBasicBlock, [3, 4, 6, 3], num_classes=num_classes, method=method,
+                   random_layers=random_layers, mixup_alpha=mixup_alpha, beta=beta,
+                   dropout=dropout)
+    return model
 
 
 def resnet50(num_classes, random_layers=[0, 1, 2, 3], method='mixup', mixup_alpha=1.0, beta=1.0,
