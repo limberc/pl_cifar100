@@ -2,13 +2,8 @@
 
 This is a extremely simple PyTorch Lighting repo for Computer Vision learner.
 
-If you are using multiple GPU:
-
-`python main.py -a ${your_model} --gpus ${num_gpus} -b ${batch_size} --distributed_backend ddp`
-
-For single GPU:
-
-`python main.py -a ${your_model} --gpus 1 -b ${batch_size} `
+## Usage
+`python main.py -a ${your_model} --gpus ${num_gpus} -b ${batch_size}`
 
 ## Training Details
 
@@ -23,7 +18,7 @@ Use ImageNet model directly would face up to the accuracy lost.
 
 ## Results
 
-|   network   | params | error@1 | error@5 |
+|   network   | params | VAL ACC@1 | VAL ACC@5 |
 | :---------: | :----: | :-----: | :-----: |
 |  ResNet18   | 11.2M  |  75.83  |  93.36  |
 |  ResNet34   | 21.3M  |  77.53  |  94.11  |
