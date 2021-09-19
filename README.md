@@ -30,8 +30,5 @@ Use ImageNet model directly would face up to the accuracy lost.
 | SeResNet18  | 11.4M  |  76.54  |  93.55  |
 | SeResNet34  | 21.6M  |  76.13  |  93.14  |
 | SeResNet50  | 26.5M  |  77.94  |  94.55  |
-| ResNext50 | 14.8M | 77.77 | 94.00 |
-| ResNext101 | 25.3M | 77.78 | 94.01 |
-| ResNext152 | 33.3M | 77.6 | 94.42 |
 | DenseNet121 | 7.0M | 77.01 | 93.55 |
 | DenseNet161 | 26M | 78.44 | 93.96 |
