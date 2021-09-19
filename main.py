@@ -1,6 +1,5 @@
-from argparse import ArgumentParser, Namespace
-
 import pytorch_lightning as pl
+import timm.models as models
 import torch
 import torch.nn.functional as F
 import torch.nn.parallel
@@ -9,11 +8,12 @@ import torch.optim.lr_scheduler as lr_scheduler
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
-from pytorch_lightning.core import LightningModule
-from torchvision.datasets import CIFAR10, CIFAR100
+from argparse import ArgumentParser, Namespace
+from pytorch_lightning import LightningModule
+from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.plugins import DDPPlugin
-
-import models
+from pytorch_lightning.utilities.cli import LightningCLI
+from torchvision.datasets import CIFAR10, CIFAR100
 
 
 def get_dataset(data_path, dataset):
@@ -48,13 +48,13 @@ class CIFARLightningModel(LightningModule):
 
     def __init__(
             self,
-            arch: str,
-            lr: float,
-            momentum: float,
-            weight_decay: int,
-            data_path: str,
-            dataset: str,
-            batch_size: int,
+            arch: str = 'resnet34',
+            lr: float = 0.4,
+            momentum: float = 0.9,
+            weight_decay: int = 5e-4,
+            data_path: str = './data',
+            dataset: str = 'cifar100',
+            batch_size: int = 512,
             **kwargs,
     ):
         super().__init__()
@@ -160,68 +160,18 @@ class CIFARLightningModel(LightningModule):
     def test_step(self, *args, **kwargs):
         return self.validation_step(*args, **kwargs)
 
-    @staticmethod
-    def add_model_specific_args(parent_parser):  # pragma: no-cover
-        parser = ArgumentParser(parents=[parent_parser])
-        parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
-                            choices=CIFARLightningModel.MODEL_NAMES,
-                            help=('model architecture: ' + ' | '.join(CIFARLightningModel.MODEL_NAMES)
-                                  + ' (default: resnet18)'))
-        parser.add_argument('-b', '--batch-size', default=512, type=int,
-                            metavar='N',
-                            help='mini-batch size (default: 256), this is the total '
-                                 'batch size of all GPUs on the current node when '
-                                 'using Data Parallel or Distributed Data Parallel')
-        parser.add_argument('-lr', '--learning-rate', default=0.4, type=float,
-                            metavar='LR', help='initial learning rate', dest='lr')
 
-        parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
-                            help='momentum')
-        parser.add_argument('--wd', '--weight-decay', default=5e-4, type=float,
-                            metavar='W', help='weight decay (default: 5e-4)',
-                            dest='weight_decay')
-        parser.add_argument('--pretrained', dest='pretrained', action='store_true',
-                            help='use layer0-trained model')
-
-        return parser
-
-
-def main(args: Namespace) -> None:
-    if args.seed is not None:
-        pl.seed_everything(args.seed)
-
-    model = CIFARLightningModel(**vars(args))
-    trainer = pl.Trainer.from_argparse_args(args)
-    if args.auto_lr_find or args.auto_scale_batch_size:
-        trainer.tune(model)
-
-    if args.evaluate:
-        trainer.test(model)
-    else:
-        trainer.fit(model)
-
-
-def run_cli():
-    parent_parser = ArgumentParser(add_help=False)
-    parent_parser = pl.Trainer.add_argparse_args(parent_parser)
-    parent_parser.add_argument('--data-path', metavar='DIR', type=str, default='./data',
-                               help='path to dataset')
-    parent_parser.add_argument('--dataset', type=str, default='cifar100',
-                               help='CIFAR10 or CIFAR100')
-    parent_parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
-                               help='evaluate model on validation set')
-    parent_parser.add_argument('--seed', type=int, default=42,
-                               help='seed for initializing training.')
-    parser = CIFARLightningModel.add_model_specific_args(parent_parser)
-    parser.set_defaults(
-        deterministic=True,
-        max_epochs=200,
-        accelerator='ddp',
-        plugins=DDPPlugin(find_unused_parameters=False),
-    )
-    args = parser.parse_args()
-    main(args)
+class ClassificationCLI(LightningCLI):
+    def add_arguments_to_parser(self, parser):
+        parser.set_defaults(
+            {
+                'trainer.max_epochs': 200,
+                'trainer.deterministic': True,
+                'trainer.accelerator': 'ddp',
+            }
+        )
 
 
 if __name__ == '__main__':
+    cli = ClassificationCLI(CIFARLightningModel)
     run_cli()
