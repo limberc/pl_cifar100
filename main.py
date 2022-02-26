@@ -1,4 +1,3 @@
-import pytorch_lightning as pl
 import timm.models as models
 import torch
 import torch.nn.functional as F
@@ -8,10 +7,7 @@ import torch.optim.lr_scheduler as lr_scheduler
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
-from argparse import ArgumentParser, Namespace
 from pytorch_lightning import LightningModule
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.plugins import DDPPlugin
 from pytorch_lightning.utilities.cli import LightningCLI
 from torchvision.datasets import CIFAR10, CIFAR100
 
@@ -73,7 +69,7 @@ class CIFARLightningModel(LightningModule):
             num_classes = 100
         else:
             raise ValueError("NOT SUPPORT DATASET.")
-        self.model = models.__dict__[self.arch](num_classes)
+        self.model = models.__dict__[self.arch](num_classes=num_classes)
         self.train_datset, self.test_dataset = get_dataset(data_path, dataset)
 
     def forward(self, x):
