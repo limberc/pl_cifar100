@@ -163,11 +163,11 @@ class ClassificationCLI(LightningCLI):
             {
                 'trainer.max_epochs': 200,
                 'trainer.deterministic': True,
-                'trainer.accelerator': 'ddp',
+                'trainer.strategy': 'ddp',
+                'trainer.gpus': 1
             }
         )
 
 
 if __name__ == '__main__':
     cli = ClassificationCLI(CIFARLightningModel)
-    run_cli()
