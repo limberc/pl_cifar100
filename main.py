@@ -51,7 +51,7 @@ class CIFARLightningModel(LightningModule):
             arch: str = 'resnet34',
             lr: float = 0.4,
             momentum: float = 0.9,
-            weight_decay: int = 5e-4,
+            weight_decay: float = 5e-4,
             data_path: str = './data',
             dataset: str = 'cifar100',
             batch_size: int = 512,
