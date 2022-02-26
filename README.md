@@ -3,13 +3,14 @@
 This is a extremely simple PyTorch Lighting repo for Computer Vision learner.
 
 ## Usage
-`python main.py -a ${your_model} --gpus ${num_gpus} -b ${batch_size}`
+
+You can first use `python main.py -h` to get the help.
+
+You can easily change the basic settings in `default_config.yaml`. For example, the batch size and the arch (network).
 
 ## Training Details
 
 I follow the hyperparameter settings in paper [Improved Regularization of Convolutional Neural Networks with Cutout](https://arxiv.org/abs/1708.04552v2), which is init lr = 0.4 divide by 5 at 60th, 120th, 160th epochs, train for 200 epochs. The batch size that we use is 512 with weight decay 5e-4, Nesterov momentum of 0.9.
-
-To note that  `--auto_scale_batch_size` and `--auto_lr_find` flag are not supported when using ddp.
 
 To note that, for CIFAR10/100, the input shape is not as the same as the ImageNet. 
 So, the model would slightly different than the ImageNet version which means the stride would be different.

@@ -1,11 +1,19 @@
 seed_everything: null
+model:
+  arch: resnet18
+  lr: 0.4
+  momentum: 0.9
+  weight_decay: 0.0005
+  data_path: ./data
+  dataset: cifar100
+  batch_size: 512
 trainer:
   logger:
     class_path: pytorch_lightning.loggers.WandbLogger
     init_args:
       project: CIFAR100
-      name: MODEL_NAME
-      save_dir: ./save_logs/cifar100/MODEL_NAME
+      name: resnet18
+      save_dir: ./save_logs/cifar100
   checkpoint_callback: true
   callbacks: null
   default_root_dir: null
@@ -14,7 +22,7 @@ trainer:
   process_position: 0
   num_nodes: 1
   num_processes: 1
-  gpus: null
+  gpus: 1
   auto_select_gpus: false
   tpu_cores: null
   log_gpu_memory: null
@@ -60,11 +68,3 @@ trainer:
   move_metrics_to_cpu: false
   multiple_trainloader_mode: max_size_cycle
   stochastic_weight_avg: false
-model:
-  arch: null
-  lr: null
-  momentum: null
-  weight_decay: null
-  data_path: null
-  dataset: null
-  batch_size: null
