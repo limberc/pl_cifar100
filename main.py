@@ -8,8 +8,12 @@ import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
 from pytorch_lightning import LightningModule
+from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.utilities.cli import LightningCLI
+from torch.utils.data import Dataset
+from torchmetrics import Accuracy
 from torchvision.datasets import CIFAR10, CIFAR100
+from typing import Optional
 
 
 def get_dataset(data_path, dataset):
@@ -71,6 +75,12 @@ class CIFARLightningModel(LightningModule):
             raise ValueError("NOT SUPPORT DATASET.")
         self.model = models.__dict__[self.arch](num_classes=num_classes)
         self.train_datset, self.test_dataset = get_dataset(data_path, dataset)
+        self.train_dataset: Optional[Dataset] = None
+        self.eval_dataset: Optional[Dataset] = None
+        self.train_acc1 = Accuracy(top_k=1)
+        self.train_acc5 = Accuracy(top_k=5)
+        self.eval_acc1 = Accuracy(top_k=1)
+        self.eval_acc5 = Accuracy(top_k=5)
 
     def forward(self, x):
         return self.model(x)
@@ -79,37 +89,22 @@ class CIFARLightningModel(LightningModule):
         images, target = batch
         output = self(images)
         loss_val = F.cross_entropy(output, target)
-        acc1, acc5 = self.__accuracy(output, target, topk=(1, 5))
-        self.log('train_loss', loss_val, on_step=True, on_epoch=True, logger=True)
-        self.log('train_acc1', acc1, on_step=True, prog_bar=True, on_epoch=True, logger=True)
-        self.log('train_acc5', acc5, on_step=True, on_epoch=True, logger=True)
+        # update metrics
+        self.train_acc1(output, target)
+        self.train_acc5(output, target)
+        self.log("train_acc1", self.train_acc1, prog_bar=True)
+        self.log("train_acc5", self.train_acc5, prog_bar=True)
         return loss_val
 
     def validation_step(self, batch, batch_idx):
         images, target = batch
         output = self(images)
         loss_val = F.cross_entropy(output, target)
-        acc1, acc5 = self.__accuracy(output, target, topk=(1, 5))
-        self.log('val_loss', loss_val, on_step=True, on_epoch=True)
-        self.log('val_acc1', acc1, on_step=True, prog_bar=True, on_epoch=True)
-        self.log('val_acc5', acc5, on_step=True, on_epoch=True)
-
-    @staticmethod
-    def __accuracy(output, target, topk=(1,)):
-        """Computes the accuracy over the k top predictions for the specified values of k"""
-        with torch.no_grad():
-            maxk = max(topk)
-            batch_size = target.size(0)
-
-            _, pred = output.topk(maxk, 1, True, True)
-            pred = pred.t()
-            correct = pred.eq(target.view(1, -1).expand_as(pred))
-
-            res = []
-            for k in topk:
-                correct_k = correct[:k].reshape(-1).float().sum(0, keepdim=True)
-                res.append(correct_k.mul_(100.0 / batch_size))
-            return res
+        self.eval_acc1(output, target)
+        self.eval_acc5(output, target)
+        self.log("val_acc1", self.eval_acc1, prog_bar=True)
+        self.log("val_acc5", self.eval_acc5, prog_bar=True)
+        return loss_val
 
     def configure_optimizers(self):
         optimizer = optim.SGD(
