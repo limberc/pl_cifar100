@@ -8,8 +8,7 @@ import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
 from pytorch_lightning import LightningModule
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.utilities.cli import LightningCLI
+from pytorch_lightning.cli import LightningCLI
 from torch.utils.data import Dataset
 from torchmetrics import Accuracy
 from torchvision.datasets import CIFAR10, CIFAR100
