@@ -1,18 +1,15 @@
+from typing import Optional
+
 import timm.models as models
-import torch
 import torch.nn.functional as F
-import torch.nn.parallel
-import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
-import torch.utils.data
-import torch.utils.data.distributed
 import torchvision.transforms as transforms
-from pytorch_lightning import LightningModule
+from pytorch_lightning import LightningDataModule, LightningModule
 from pytorch_lightning.cli import LightningCLI
-from torch.utils.data import Dataset
+from torch.optim import SGD
+from torch.utils.data import DataLoader, Dataset
 from torchmetrics import Accuracy
 from torchvision.datasets import CIFAR10, CIFAR100
-from typing import Optional
 
 
 def get_dataset(data_path, dataset):
@@ -36,6 +33,26 @@ def get_dataset(data_path, dataset):
         train_data = CIFAR100(data_path, train=True, transform=train_transform, download=True)
         test_data = CIFAR100(data_path, train=False, transform=test_transform, download=True)
     return train_data, test_data
+
+
+class CIFARDataModule(LightningDataModule):
+    def __init__(self, data_path: str = './data', dataset: str = 'cifar100', batch_size: int = 512):
+        super().__init__()
+        self.data_path = data_path
+        self.dataset = dataset
+        self.batch_size = batch_size
+
+    def setup(self, stage: Optional[str] = None):
+        self.train_data, self.test_data = get_dataset(self.data_path, self.dataset)
+
+    def train_dataloader(self):
+        return DataLoader(self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=4, pin_memory=True)
+
+    def val_dataloader(self):
+        return DataLoader(self.test_data, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
+
+    def test_dataloader(self):
+        return DataLoader(self.test_data, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
 
 class CIFARLightningModel(LightningModule):
@@ -76,10 +93,8 @@ class CIFARLightningModel(LightningModule):
         self.train_datset, self.test_dataset = get_dataset(data_path, dataset)
         self.train_dataset: Optional[Dataset] = None
         self.eval_dataset: Optional[Dataset] = None
-        self.train_acc1 = Accuracy(top_k=1)
-        self.train_acc5 = Accuracy(top_k=5)
-        self.eval_acc1 = Accuracy(top_k=1)
-        self.eval_acc5 = Accuracy(top_k=5)
+        self.train_acc = Accuracy(task='multiclass', num_classes=num_classes)
+        self.eval_acc = Accuracy(task='multiclass', num_classes=num_classes)
 
     def forward(self, x):
         return self.model(x)
@@ -89,24 +104,20 @@ class CIFARLightningModel(LightningModule):
         output = self(images)
         loss_val = F.cross_entropy(output, target)
         # update metrics
-        self.train_acc1(output, target)
-        self.train_acc5(output, target)
-        self.log("train_acc1", self.train_acc1, prog_bar=True)
-        self.log("train_acc5", self.train_acc5, prog_bar=True)
+        self.train_acc(output, target)
+        self.log("train_acc", self.train_acc, prog_bar=True)
         return loss_val
 
     def validation_step(self, batch, batch_idx):
         images, target = batch
         output = self(images)
         loss_val = F.cross_entropy(output, target)
-        self.eval_acc1(output, target)
-        self.eval_acc5(output, target)
-        self.log("val_acc1", self.eval_acc1, prog_bar=True)
-        self.log("val_acc5", self.eval_acc5, prog_bar=True)
+        self.eval_acc(output, target)
+        self.log("val_acc1", self.eval_acc, prog_bar=True)
         return loss_val
 
     def configure_optimizers(self):
-        optimizer = optim.SGD(
+        optimizer = SGD(
             self.parameters(),
             lr=(self.lr or self.learning_rate),
             momentum=self.momentum,
@@ -118,50 +129,20 @@ class CIFARLightningModel(LightningModule):
         )
         return [optimizer], [scheduler]
 
-    def train_dataloader(self):
-        train_loader = torch.utils.data.DataLoader(
-            dataset=self.train_datset,
-            batch_size=self.batch_size,
-            shuffle=True,
-            num_workers=27,
-            pin_memory=True,
-            drop_last=True
-        )
-        return train_loader
-
-    def val_dataloader(self):
-        val_loader = torch.utils.data.DataLoader(
-            dataset=self.test_dataset,
-            batch_size=self.batch_size,
-            num_workers=12,
-            pin_memory=True,
-        )
-        return val_loader
-
-    def test_dataloader(self):
-        test_loader = torch.utils.data.DataLoader(
-            dataset=self.test_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.workers,
-            pin_memory=True,
-        )
-        return test_loader
-
     def test_step(self, *args, **kwargs):
         return self.validation_step(*args, **kwargs)
 
 
-class ClassificationCLI(LightningCLI):
-    def add_arguments_to_parser(self, parser):
-        parser.set_defaults(
-            {
-                'trainer.max_epochs': 200,
-                'trainer.deterministic': True,
-                'trainer.strategy': 'ddp',
-                'trainer.gpus': 1
-            }
-        )
-
-
 if __name__ == '__main__':
-    cli = ClassificationCLI(CIFARLightningModel)
+    LightningCLI(
+        CIFARLightningModel, CIFARDataModule,
+        seed_everything_default=42,
+        save_config_callback=None,
+        trainer_defaults={
+            "max_epochs": 200,
+            "accelerator": "auto",
+            "strategy": "ddp_find_unused_parameters_false",
+            "devices": 2,
+            "benchmark": True,
+        }
+    )
