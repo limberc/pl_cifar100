@@ -21,6 +21,8 @@ We reported the total training time (s).
 | ConvNeXt-Large | 197.76M | 64         |               |               |
 |                |         | 512        |               |               |
 
+resnet50
+
 vit_large_patch14_224
 
 vit_base_patch16_224

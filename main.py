@@ -25,10 +25,10 @@ class FakeDataModule(LightningDataModule):
         ]))
 
     def train_dataloader(self):
-        return DataLoader(self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=4, pin_memory=True)
+        return DataLoader(self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=10, pin_memory=True)
 
     def val_dataloader(self):
-        return DataLoader(self.test_data, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
+        return DataLoader(self.test_data, batch_size=self.batch_size, shuffle=False, num_workers=10, pin_memory=True)
 
     def test_dataloader(self):
         return DataLoader(self.test_data, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
@@ -49,7 +49,6 @@ class VisionLightningModel(LightningModule):
             weight_decay: float = 5e-4,
             data_path: str = './data',
             dataset: str = 'cifar100',
-            batch_size: int = 512,
             **kwargs,
     ):
         super().__init__()
@@ -60,7 +59,6 @@ class VisionLightningModel(LightningModule):
         self.weight_decay = weight_decay
         self.data_path = data_path
         self.dataset = dataset
-        self.batch_size = batch_size
         self.model = models.__dict__[self.arch]()
 
     def forward(self, x):
